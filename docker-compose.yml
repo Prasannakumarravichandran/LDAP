@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+  openldap:
+    image: osixia/openldap:latest
+    container_name: LDAP
+    hostname: openldap
+    ports:
+      - "389:389"
+      - "636:636"
+    volumes:
+      - ./data/certificates:/container/service/slapd/assets/certs
+      - ./data/slapd/database:/var/lib/ldap
+      - ./data/slapd/config:/etc/ldap/slapd.d
+    environment:
+      - LDAP_ORGANISATION=kriyatecldap
+      - LDAP_DOMAIN=kriyatecldap.com
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=kt@12345
+      - LDAP_CONFIG_PASSWORD=kt_config
+      - "LDAP_BASE_DN=dc=kriyatec,dc=com"
+      - LDAP_TLS_CRT_FILENAME=server.crt
+      - LDAP_TLS_KEY_FILENAME=server.key
+      - LDAP_TLS_CA_CRT_FILENAME=kriyatecldap.com.ca.crt
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=kriyatec
+      - LDAP_READONLY_USER_PASSWORD=kt@2023
+      - LDAP_READONLY_USER_USERNAME=customer
+      - LDAP_READONLY_USER_PASSWORD=cust@2023
+      - LDAP_READONLY_USER_USERNAME=client
+      - LDAP_READONLY_USER_PASSWORD=client@2023
+      - LDAP_READONLY_USER_USERNAME=employee
+      - LDAP_READONLY_USER_PASSWORD=kempt@2023
+    networks:
+      - openldap
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    hostname: phpldapadmin
+    ports:
+      - "90:90"
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap
+      - PHPLDAPADMIN_HTTPS=false
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+
+networks:
+  openldap:
+    driver: bridge
+
