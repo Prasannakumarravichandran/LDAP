@@ -37,7 +37,7 @@ services:
     container_name: phpldapadmin
     hostname: phpldapadmin
     ports:
-      - "90:90"
+      - "7000:7000"
     environment:
       - PHPLDAPADMIN_LDAP_HOSTS=openldap
       - PHPLDAPADMIN_HTTPS=false
